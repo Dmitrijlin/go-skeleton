@@ -1,0 +1,12 @@
+{
+	"dir": "./bin/tools",
+	"tools": [
+		{
+			"runtime": "go",
+			"module": "github.com/golangci/golangci-lint/cmd/golangci-lint@v1.63.4",
+			"alias": null,
+			"tags": null
+		}
+	],
+	"includes": []
+}

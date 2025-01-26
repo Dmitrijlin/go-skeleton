@@ -1,0 +1,6 @@
+*
+!command
+!internal
+!Taskfile.yml
+!go.mod
+!go.sum
