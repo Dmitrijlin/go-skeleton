@@ -33,7 +33,7 @@ tasks:
   tools:install:
     run: once
     deps:
-      - "tools:add-default-dependencies"
+      - tools:add-default-dependencies
     cmds:
       - toolset sync
 
@@ -47,13 +47,3 @@ tasks:
   lint:
     cmds:
       - toolset run golangci-lint run --config=./configs/.golangci.yml ./
-
-  install:
-    desc: Installing project
-    cmds:
-      - go install ./cmd/skeleton
-
-  generate:project:
-    cmds:
-      - task: install
-      - skeleton init -p ./projects/test

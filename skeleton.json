@@ -9,7 +9,8 @@
 				"children": [
 					{
 						"name": "main.go",
-						"type": "file"
+						"type": "file",
+						"tag": "main.go"
 					}
 				]
 			}
@@ -21,7 +22,8 @@
 		"children": [
 			{
 				"name": ".golangci.yml",
-				"type": "file"
+				"type": "file",
+				"tag": "golangci"
 			}
 		]
 	},
@@ -32,7 +34,8 @@
 	},
 	{
 		"name": ".editorconfig",
-		"type": "file"
+		"type": "file",
+		"tag": "editorconfig"
 	},
 	{
 		"name": ".env.dist",
@@ -40,7 +43,8 @@
 	},
 	{
 		"name": ".gitignore",
-		"type": "file"
+		"type": "file",
+		"tag": "gitignore"
 	},
 	{
 		"name": "go.mod",
@@ -48,10 +52,17 @@
 	},
 	{
 		"name": "README.md",
-		"type": "file"
+		"type": "file",
+		"tag": "readme"
 	},
 	{
 		"name": "Taskfile.yml",
-		"type": "file"
+		"type": "file",
+		"tag": "taskfile"
+	},
+	{
+		"name": "docker-compose.yml",
+		"type": "file",
+		"tag": "docker-compose"
 	}
 ]

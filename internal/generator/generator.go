@@ -12,12 +12,6 @@ type Generator struct {
 	dialog *dialog.Dialog
 }
 
-var (
-	baseStructure = map[string]string{
-		"main.go": "",
-	}
-)
-
 func NewGenerator() *Generator {
 	return &Generator{
 		dialog: dialog.NewDialog(),
@@ -41,7 +35,7 @@ func (g *Generator) Generate(
 		}
 	}
 
-	if err = g.generateBaseStructure(ctx, dir, configPath); err != nil {
+	if err = g.generateStructure(ctx, dir, configPath); err != nil {
 		return fmt.Errorf("generate base structure: %w", err)
 	}
 
