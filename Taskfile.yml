@@ -47,3 +47,13 @@ tasks:
   lint:
     cmds:
       - toolset run golangci-lint run --config=./configs/.golangci.yml ./
+
+  install:
+    desc: Installing project
+    cmds:
+      - go install ./cmd/skeleton
+
+  generate:project:
+    cmds:
+      - task: install
+      - skeleton init -p ./projects/test

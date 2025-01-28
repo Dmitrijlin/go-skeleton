@@ -1,0 +1,57 @@
+[
+	{
+		"name": "cmd",
+		"type": "dir",
+		"children": [
+			{
+				"name": "skeleton",
+				"type": "dir",
+				"children": [
+					{
+						"name": "main.go",
+						"type": "file"
+					}
+				]
+			}
+		]
+	},
+	{
+		"name": "config",
+		"type": "dir",
+		"children": [
+			{
+				"name": ".golangci.yml",
+				"type": "file"
+			}
+		]
+	},
+	{
+		"name": "internal",
+		"type": "dir",
+		"children": []
+	},
+	{
+		"name": ".editorconfig",
+		"type": "file"
+	},
+	{
+		"name": ".env.dist",
+		"type": "file"
+	},
+	{
+		"name": ".gitignore",
+		"type": "file"
+	},
+	{
+		"name": "go.mod",
+		"type": "file"
+	},
+	{
+		"name": "README.md",
+		"type": "file"
+	},
+	{
+		"name": "Taskfile.yml",
+		"type": "file"
+	}
+]
