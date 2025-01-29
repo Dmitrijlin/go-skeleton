@@ -6,7 +6,6 @@ import (
 	"embed"
 	"fmt"
 	config2 "github.com/Dmitrijlin/go-skeleton/internal/config"
-	"github.com/Dmitrijlin/go-skeleton/internal/generator/tag"
 	"github.com/Dmitrijlin/go-skeleton/internal/helper"
 	"github.com/Dmitrijlin/go-skeleton/internal/project-struct"
 	"os"
@@ -27,6 +26,8 @@ func (g *Generator) generateStructure(
 		return fmt.Errorf("generate: get config file: %w", err)
 	}
 
+	projectstruct.CollectTags(config)
+
 	err = g.generateFromConfig(dir, config)
 	if err != nil {
 		return fmt.Errorf("generate: generate from config: %w", err)
@@ -35,6 +36,7 @@ func (g *Generator) generateStructure(
 	return nil
 }
 
+//nolint:gocognit
 func (g *Generator) generateFromConfig(baseDir string, config []projectstruct.ProjectStruct) error {
 	for _, entity := range config {
 		entityPath := fmt.Sprintf("%s/%s", baseDir, entity.Name)
@@ -45,33 +47,58 @@ func (g *Generator) generateFromConfig(baseDir string, config []projectstruct.Pr
 
 		switch entity.Type {
 		case projectstruct.File:
-			if !exists {
-				res, err := g.render(entity)
-				if err != nil {
-					return fmt.Errorf("generate: render: %w", err)
-				}
-
-				err = os.WriteFile(entityPath, res, 0755) //nolint:gosec
-				if err != nil {
-					return fmt.Errorf("generate: create file: %w", err)
-				}
-			} else {
-				fmt.Println("Skipping existing file:", entityPath)
-			}
+			err = g.handleFile(exists, entityPath, entity)
 		case projectstruct.Dir:
-			if !exists {
-				err = os.Mkdir(entityPath, 0755)
-				if err != nil {
-					return fmt.Errorf("generate: create dir: %w", err)
-				}
-			}
+			err = g.handleDir(exists, entityPath, entity)
+		}
 
-			if len(entity.Children) > 0 {
-				err = g.generateFromConfig(entityPath, entity.Children)
-				if err != nil {
-					return fmt.Errorf("generate: generate from config: %w", err)
-				}
-			}
+		if err != nil {
+			return fmt.Errorf("generate: handle file: %s %w", entityPath, err)
+		}
+	}
+
+	return nil
+}
+
+func (g *Generator) handleFile(
+	exists bool,
+	entityPath string,
+	entity projectstruct.ProjectStruct,
+) error {
+	if !exists {
+		res, err := g.render(entity)
+		if err != nil {
+			return fmt.Errorf("generate: render: %w", err)
+		}
+
+		err = os.WriteFile(entityPath, res, 0755) //nolint:gosec
+		if err != nil {
+			return fmt.Errorf("generate: create file: %w", err)
+		}
+	} else {
+		fmt.Println("Skipping existing file:", entityPath)
+	}
+
+	return nil
+}
+
+func (g *Generator) handleDir(exists bool,
+	entityPath string,
+	entity projectstruct.ProjectStruct,
+) error {
+	var err error
+
+	if !exists {
+		err = os.Mkdir(entityPath, 0755)
+		if err != nil {
+			return fmt.Errorf("generate: create dir: %w", err)
+		}
+	}
+
+	if len(entity.Children) > 0 {
+		err = g.generateFromConfig(entityPath, entity.Children)
+		if err != nil {
+			return fmt.Errorf("generate: generate from config: %w", err)
 		}
 	}
 
@@ -83,11 +110,11 @@ func (g *Generator) render(file projectstruct.ProjectStruct) ([]byte, error) {
 		return nil, nil
 	}
 
-	if v, ok := tag.DefaultTagTemplates[file.Tag]; ok {
-		tmpl := template.Must(template.ParseFS(templates, fmt.Sprintf("template/%s", v)))
+	if v, ok := projectstruct.DefaultTagTemplates[file.Tag]; ok {
+		tmpl := template.Must(template.ParseFS(templates, fmt.Sprintf("template/%s", v.Template)))
 		buf := new(bytes.Buffer)
 
-		if err := tmpl.Execute(buf, map[string]interface{}{}); err != nil {
+		if err := tmpl.Execute(buf, v.ParamsGenerator()); err != nil {
 			return nil, fmt.Errorf("cannot render template: %w", err)
 		}
 
