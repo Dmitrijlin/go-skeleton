@@ -3,15 +3,17 @@ package main
 import (
 	"fmt"
 	"github.com/Dmitrijlin/go-skeleton/internal/generator"
+	"github.com/Dmitrijlin/go-skeleton/internal/initializer"
 	"github.com/urfave/cli/v2"
 	"os"
 	"sort"
 )
 
 const (
-	projectPathFlag    = "project-path"
-	configPathFlag     = "config"
-	noInteractModeFlag = "no-interact"
+	projectPathFlag = "project-path"
+	configPathFlag  = "config"
+	//noInteractModeFlag = "no-interact"
+	globalFlag = "global"
 
 	version = "0.1.0"
 )
@@ -27,25 +29,35 @@ func main() {
 				Name:  "init",
 				Usage: "initialize skeleton",
 				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    globalFlag,
+						Aliases: []string{"g"},
+						Usage:   "initialize skeleton in the home directory",
+					},
 					&cli.StringFlag{
 						Name:    projectPathFlag,
 						Usage:   "project path",
-						Value:   ".",
 						Aliases: []string{"p"},
 					},
 					&cli.StringFlag{
 						Name:    configPathFlag,
 						Aliases: []string{"c"},
 						Usage:   "config file",
-						Value:   "skeleton.json",
-					},
-					&cli.BoolFlag{
-						Name:  noInteractModeFlag,
-						Usage: "disable interactive mode",
-						Value: false,
 					},
 				},
 				Action: cmdInit,
+			},
+			{
+				Name:  "generate",
+				Usage: "generate skeleton",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    projectPathFlag,
+						Usage:   "project path",
+						Aliases: []string{"p"},
+					},
+				},
+				Action: cmdGenerate,
 			},
 		},
 	}
@@ -65,9 +77,15 @@ func main() {
 }
 
 func cmdInit(c *cli.Context) error {
-	dir := c.String(projectPathFlag)
+	global := c.Bool(globalFlag)
+	projectPath := c.String(projectPathFlag)
 	configPath := c.String(configPathFlag)
-	interactMode := !c.Bool(noInteractModeFlag)
 
-	return generator.NewGenerator().Generate(c.Context, dir, configPath, interactMode)
+	return initializer.NewInitializer(global, projectPath, configPath).Initialize(c.Context)
+}
+
+func cmdGenerate(c *cli.Context) error {
+	dir := c.String(projectPathFlag)
+
+	return generator.NewGenerator().Generate(c.Context, dir)
 }

@@ -10,6 +10,9 @@ type ProjectStruct struct {
 type EntityTypeEnum string
 
 const (
-	Dir  = EntityTypeEnum("dir")
-	File = EntityTypeEnum("file")
+	Dir                = EntityTypeEnum("dir")
+	File               = EntityTypeEnum("file")
+	ConfigFileName     = ".skeleton.json"
+	ConfigLockFileName = ".skeleton.lock.json"
+	ConfigDirInHome    = ".go-skeleton"
 )

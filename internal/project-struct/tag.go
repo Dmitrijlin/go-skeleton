@@ -57,20 +57,30 @@ var DefaultTagTemplates = map[Tag]struct {
 	},
 }
 
-var UsedTags map[Tag]bool
+var usedTags map[Tag]bool
 
-func CollectTags(config []ProjectStruct) {
-	if UsedTags == nil {
-		UsedTags = make(map[Tag]bool, len(DefaultTagTemplates))
+func SetTags(t map[Tag]bool) {
+	usedTags = t
+}
+
+func CollectTags(structs []ProjectStruct) map[Tag]bool {
+	if usedTags == nil {
+		usedTags = make(map[Tag]bool, len(DefaultTagTemplates))
 	}
 
-	for _, projStruct := range config {
+	collectTagsInternal(structs)
+
+	return usedTags
+}
+
+func collectTagsInternal(structs []ProjectStruct) {
+	for _, projStruct := range structs {
 		if projStruct.Type == File && projStruct.Tag == "" {
-			UsedTags[projStruct.Tag] = true
+			usedTags[projStruct.Tag] = true
 		}
 
 		if projStruct.Type == Dir {
-			CollectTags(projStruct.Children)
+			collectTagsInternal(projStruct.Children)
 		}
 	}
 }
@@ -82,7 +92,7 @@ func emptyTagParamsGenerator() map[string]any {
 func dotEnvTagParamsGenerator() map[string]any {
 	params := make(map[string]any)
 
-	if _, ok := UsedTags[PostgresqlTag]; ok {
+	if _, ok := usedTags[PostgresqlTag]; ok {
 		params["hasPostgres"] = true
 	} else {
 		params["hasPostgres"] = false
@@ -94,7 +104,7 @@ func dotEnvTagParamsGenerator() map[string]any {
 func dockerComposeTagParamsGenerator() map[string]any {
 	params := make(map[string]any)
 
-	if _, ok := UsedTags[PostgresqlTag]; ok {
+	if _, ok := usedTags[PostgresqlTag]; ok {
 		params["hasPostgres"] = true
 	} else {
 		params["hasPostgres"] = false

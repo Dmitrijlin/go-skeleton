@@ -6,7 +6,7 @@ import (
 	"embed"
 	"fmt"
 	config2 "github.com/Dmitrijlin/go-skeleton/internal/config"
-	"github.com/Dmitrijlin/go-skeleton/internal/helper"
+	"github.com/Dmitrijlin/go-skeleton/internal/file"
 	"github.com/Dmitrijlin/go-skeleton/internal/project-struct"
 	"os"
 	"text/template"
@@ -17,18 +17,16 @@ var templates embed.FS
 
 func (g *Generator) generateStructure(
 	_ context.Context,
-	dir, configPath string,
+	dir string,
 ) error {
 	fmt.Println("Generating base structure into " + dir)
 
-	config, err := config2.GetConfigFile(configPath)
+	config, err := config2.GetConfigFile(dir)
 	if err != nil {
 		return fmt.Errorf("generate: get config file: %w", err)
 	}
 
-	projectstruct.CollectTags(config)
-
-	err = g.generateFromConfig(dir, config)
+	err = g.generateFromConfig(dir, config.ProjectStruct)
 	if err != nil {
 		return fmt.Errorf("generate: generate from config: %w", err)
 	}
@@ -40,7 +38,7 @@ func (g *Generator) generateStructure(
 func (g *Generator) generateFromConfig(baseDir string, config []projectstruct.ProjectStruct) error {
 	for _, entity := range config {
 		entityPath := fmt.Sprintf("%s/%s", baseDir, entity.Name)
-		exists, err := helper.Exists(entityPath)
+		exists, err := file.Exists(entityPath)
 		if err != nil {
 			return fmt.Errorf("generate: error checking if file exists: %w", err)
 		}

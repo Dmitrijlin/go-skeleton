@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/Dmitrijlin/go-skeleton/internal/dialog"
-	"github.com/Dmitrijlin/go-skeleton/internal/helper"
+	"github.com/Dmitrijlin/go-skeleton/internal/file"
 	"os"
 )
 
@@ -20,10 +20,18 @@ func NewGenerator() *Generator {
 
 func (g *Generator) Generate(
 	ctx context.Context,
-	dir, configPath string,
-	interactMode bool,
+	dir string,
 ) error {
-	dirExists, err := helper.Exists(dir)
+	var err error
+
+	if dir == "" {
+		dir, err = os.Getwd()
+		if err != nil {
+			return fmt.Errorf("could not get current directory: %w", err)
+		}
+	}
+
+	dirExists, err := file.Exists(dir)
 	if err != nil {
 		return fmt.Errorf("generate: %w", err)
 	}
@@ -35,7 +43,7 @@ func (g *Generator) Generate(
 		}
 	}
 
-	if err = g.generateStructure(ctx, dir, configPath); err != nil {
+	if err = g.generateStructure(ctx, dir); err != nil {
 		return fmt.Errorf("generate base structure: %w", err)
 	}
 
